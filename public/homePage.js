@@ -25,8 +25,8 @@ let ratesBoard = new RatesBoard();
 ratesBoard.getCurrencyRate = function() {
     ApiConnector.getStocks(response => {
         if (response.success) {
-            this.clearTable();
-            this.fillTable(response.data)
+            ratesBoard.clearTable();
+            ratesBoard.fillTable(response.data);
         }
     })
 }
@@ -41,7 +41,10 @@ let moneyManager = new MoneyManager();
 let money = (method) => data => method(data, response => {
     if (response.success) {
         ProfileWidget.showProfile(response.data);
-    } 
+        moneyManager.setMessage(response.success, 'Операция успешно выполнена');
+    } else {
+        moneyManager.setMessage(response.success, response.error);
+    }
 })
 
 // Пополнение баланса
@@ -59,28 +62,30 @@ moneyManager.sendMoneyCallback  = money(ApiConnector.transferMoney);
 let favoritesWidget = new FavoritesWidget();
 
 // Начальный список избранного
-favoritesWidget.getFavoritesWidget = function() {
-    ApiConnector.getFavorites(response => {
-        if (response.success) {
-            this.clearTable();
-            this.fillTable(response.data);
-            this.updateUsersList(response.data);   
-        }      
-    })
-}
+ApiConnector.getFavorites(response => {
+    if (response.success) {
+        favoritesWidget.clearTable();
+        favoritesWidget.fillTable(response.data);
+        moneyManager.updateUsersList(response.data);
+    }      
+})
+
 
 // Добавление пользователя в список избранных
 let favorite = (method) => data => method(data, response => {
-        if (response.success) {
-            this.clearTable();
-            this.fillTable(response.data);
-            this.updateUsersList(data);   
-        }    
+    if (response.success) {
+        favoritesWidget.clearTable();
+        favoritesWidget.fillTable(response.data);
+        moneyManager.updateUsersList(response.data);
+        favoritesWidget.setMessage(response.success, 'Пользователь успешно добавлен в Избарнное');
+    } else {
+        favoritesWidget.setMessage(response.success, response.error);
+    }
 })
 
 favoritesWidget.addUserCallback = favorite(ApiConnector.addUserToFavorites);
 
-// Удаление пользователя из списка избранных
+// // Удаление пользователя из списка избранных
 favoritesWidget.removeUserCallback = favorite(ApiConnector.removeUserFromFavorites);
 
 
