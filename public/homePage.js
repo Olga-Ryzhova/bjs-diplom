@@ -77,7 +77,7 @@ let favorite = (method) => data => method(data, response => {
         favoritesWidget.clearTable();
         favoritesWidget.fillTable(response.data);
         moneyManager.updateUsersList(response.data);
-        favoritesWidget.setMessage(response.success, 'Пользователь успешно добавлен в Избарнное');
+        favoritesWidget.setMessage(response.success, 'Операция успешно выполнена');
     } else {
         favoritesWidget.setMessage(response.success, response.error);
     }
